@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STB-Proxy Configuration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: #34495e;
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .portal-list {
+            margin-top: 20px;
+        }
+        
+        .portal-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .portal-item.disabled {
+            opacity: 0.6;
+        }
+        
+        .portal-name {
+            font-weight: bold;
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .portal-details {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .portal-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            background: #34495e;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #dee2e6;
+            text-align: right;
+        }
+        
+        .close {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            opacity: 0.7;
+        }
+        
+        .alert {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-active {
+            background-color: #28a745;
+        }
+        
+        .status-inactive {
+            background-color: #dc3545;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .portal-actions {
+                flex-direction: column;
+            }
+            
+            .portal-actions .btn {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>STB-Proxy Configuration</h1>
+            <p>Manage your Stalker portals with advanced authentication support</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                Portal Management
+                <button class="btn btn-success" style="float: right;" onclick="showAddPortalModal()">Add Portal</button>
+            </div>
+            <div class="card-body">
+                <div id="portalsList" class="portal-list">
+                    <div class="loading">Loading portals...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                M3U Playlist
+            </div>
+            <div class="card-body">
+                <p>Your M3U playlist URL:</p>
+                <input type="text" id="m3uUrl" readonly style="margin-bottom: 10px;">
+                <br>
+                <button class="btn btn-primary" onclick="copyM3uUrl()">Copy URL</button>
+                <a href="/m3u" class="btn btn-secondary" target="_blank">Download M3U</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Portal Modal -->
+    <div id="portalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="closePortalModal()">&times;</span>
+                <h2 id="modalTitle">Add Portal</h2>
+            </div>
+            <div class="modal-body">
+                <div id="modalAlert"></div>
+                <form id="portalForm">
+                    <input type="hidden" id="portalId">
+                    
+                    <div class="form-group">
+                        <label for="portalName">Portal Name *</label>
+                        <input type="text" id="portalName" required placeholder="My IPTV Portal">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="portalUrl">Portal URL *</label>
+                        <input type="url" id="portalUrl" required placeholder="http://portal.example.com/stalker_portal/c/">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="portalMac">MAC Address *</label>
+                        <input type="text" id="portalMac" required placeholder="00:1A:79:8F:64:C3" pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="portalSerial">Serial Number</label>
+                        <input type="text" id="portalSerial" placeholder="B83B864C04CDA223D6B7B7FF86370E59">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="portalDeviceId">Device ID</label>
+                        <input type="text" id="portalDeviceId" placeholder="DBB3483AB26E8F449E14BDB08BB2D9F2B3E81FBA37CA5FDC6FEB468A6073213E">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="portalDeviceId2">Device ID2</label>
+                        <input type="text" id="portalDeviceId2" placeholder="DBB3483AB26E8F449E14BDB08BB2D9F2B3E81FBA37CA5FDC6FEB468A6073213E">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="portalSignature">Signature</label>
+                        <input type="text" id="portalSignature" placeholder="AD5CC68E6E692A01C732FED19D6ED385C28327536068BAFEB6DD6160C42B4A73">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="portalEnabled" checked>
+                            Enable Portal
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closePortalModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="savePortal()">Save Portal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Portal Modal -->
+    <div id="testModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="closeTestModal()">&times;</span>
+                <h2>Portal Test Results</h2>
+            </div>
+            <div class="modal-body">
+                <div id="testResults" class="loading">Testing portal connection...</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="closeTestModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let portals = [];
+        let currentPortalId = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPortals();
+            updateM3uUrl();
+        });
+
+        // Update M3U URL
+        function updateM3uUrl() {
+            const m3uUrl = window.location.origin + '/m3u';
+            document.getElementById('m3uUrl').value = m3uUrl;
+        }
+
+        // Copy M3U URL to clipboard
+        function copyM3uUrl() {
+            const urlInput = document.getElementById('m3uUrl');
+            urlInput.select();
+            urlInput.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            showAlert('M3U URL copied to clipboard!', 'success');
+        }
+
+        // Load portals from API
+        async function loadPortals() {
+            try {
+                const response = await fetch('/api/portals');
+                portals = await response.json();
+                renderPortals();
+            } catch (error) {
+                console.error('Error loading portals:', error);
+                document.getElementById('portalsList').innerHTML = '<div class="alert alert-error">Error loading portals</div>';
+            }
+        }
+
+        // Render portals list
+        function renderPortals() {
+            const container = document.getElementById('portalsList');
+            
+            if (portals.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">No portals configured. Click "Add Portal" to get started.</div>';
+                return;
+            }
+
+            let html = '';
+            portals.forEach(portal => {
+                const statusClass = portal.enabled ? 'status-active' : 'status-inactive';
+                const portalClass = portal.enabled ? '' : 'disabled';
+                
+                html += `
+                    <div class="portal-item ${portalClass}">
+                        <div class="portal-name">
+                            <span class="status-indicator ${statusClass}"></span>
+                            ${escapeHtml(portal.name)}
+                        </div>
+                        <div class="portal-details">
+                            <strong>URL:</strong> ${escapeHtml(portal.url)}<br>
+                            <strong>MAC:</strong> ${escapeHtml(portal.mac)}<br>
+                            ${portal.serial_number ? `<strong>Serial:</strong> ${escapeHtml(portal.serial_number)}<br>` : ''}
+                            ${portal.device_id ? `<strong>Device ID:</strong> ${escapeHtml(portal.device_id.substring(0, 20))}...<br>` : ''}
+                            ${portal.signature ? `<strong>Signature:</strong> ${escapeHtml(portal.signature.substring(0, 20))}...<br>` : ''}
+                        </div>
+                        <div class="portal-actions">
+                            <button class="btn btn-primary" onclick="editPortal(${portal.id})">Edit</button>
+                            <button class="btn btn-success" onclick="testPortal(${portal.id})">Test</button>
+                            <button class="btn btn-secondary" onclick="viewChannels(${portal.id})">Channels</button>
+                            <button class="btn btn-danger" onclick="deletePortal(${portal.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Show add portal modal
+        function showAddPortalModal() {
+            currentPortalId = null;
+            document.getElementById('modalTitle').textContent = 'Add Portal';
+            document.getElementById('portalForm').reset();
+            document.getElementById('portalId').value = '';
+            document.getElementById('portalEnabled').checked = true;
+            document.getElementById('modalAlert').innerHTML = '';
+            document.getElementById('portalModal').style.display = 'block';
+        }
+
+        // Edit portal
+        function editPortal(portalId) {
+            const portal = portals.find(p => p.id === portalId);
+            if (!portal) return;
+
+            currentPortalId = portalId;
+            document.getElementById('modalTitle').textContent = 'Edit Portal';
+            document.getElementById('portalId').value = portal.id;
+            document.getElementById('portalName').value = portal.name;
+            document.getElementById('portalUrl').value = portal.url;
+            document.getElementById('portalMac').value = portal.mac;
+            document.getElementById('portalSerial').value = portal.serial_number || '';
+            document.getElementById('portalDeviceId').value = portal.device_id || '';
+            document.getElementById('portalDeviceId2').value = portal.device_id2 || '';
+            document.getElementById('portalSignature').value = portal.signature || '';
+            document.getElementById('portalEnabled').checked = portal.enabled;
+            document.getElementById('modalAlert').innerHTML = '';
+            document.getElementById('portalModal').style.display = 'block';
+        }
+
+        // Save portal
+        async function savePortal() {
+            const form = document.getElementById('portalForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const portalData = {
+                name: document.getElementById('portalName').value,
+                url: document.getElementById('portalUrl').value,
+                mac: document.getElementById('portalMac').value,
+                serial_number: document.getElementById('portalSerial').value,
+                device_id: document.getElementById('portalDeviceId').value,
+                device_id2: document.getElementById('portalDeviceId2').value,
+                signature: document.getElementById('portalSignature').value,
+                enabled: document.getElementById('portalEnabled').checked
+            };
+
+            try {
+                let response;
+                if (currentPortalId) {
+                    response = await fetch(`/api/portals/${currentPortalId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(portalData)
+                    });
+                } else {
+                    response = await fetch('/api/portals', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(portalData)
+                    });
+                }
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    closePortalModal();
+                    loadPortals();
+                    showAlert(result.message, 'success');
+                } else {
+                    showModalAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showModalAlert('Error saving portal: ' + error.message, 'error');
+            }
+        }
+
+        // Test portal
+        async function testPortal(portalId) {
+            document.getElementById('testResults').innerHTML = '<div class="loading">Testing portal connection...</div>';
+            document.getElementById('testModal').style.display = 'block';
+
+            try {
+                const response = await fetch(`/api/portals/${portalId}/test`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                
+                let html = '';
+                if (result.success) {
+                    html = `
+                        <div class="alert alert-success">
+                            <strong>Portal Test Successful!</strong><br>
+                            ${result.message}<br>
+                            ${result.token ? `Token: ${result.token.substring(0, 20)}...` : ''}
+                        </div>
+                    `;
+                } else {
+                    html = `
+                        <div class="alert alert-error">
+                            <strong>Portal Test Failed</strong><br>
+                            ${result.message}
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('testResults').innerHTML = html;
+            } catch (error) {
+                document.getElementById('testResults').innerHTML = `
+                    <div class="alert alert-error">
+                        <strong>Error testing portal:</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // View channels
+        async function viewChannels(portalId) {
+            try {
+                const response = await fetch(`/api/portals/${portalId}/channels`);
+                const channels = await response.json();
+                
+                if (response.ok && Array.isArray(channels)) {
+                    showAlert(`Portal has ${channels.length} channels available`, 'success');
+                } else {
+                    showAlert('Error loading channels: ' + (channels.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showAlert('Error loading channels: ' + error.message, 'error');
+            }
+        }
+
+        // Delete portal
+        async function deletePortal(portalId) {
+            if (!confirm('Are you sure you want to delete this portal?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/portals/${portalId}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                
+                if (response.ok) {
+                    loadPortals();
+                    showAlert(result.message, 'success');
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error deleting portal: ' + error.message, 'error');
+            }
+        }
+
+        // Close portal modal
+        function closePortalModal() {
+            document.getElementById('portalModal').style.display = 'none';
+        }
+
+        // Close test modal
+        function closeTestModal() {
+            document.getElementById('testModal').style.display = 'none';
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            document.body.insertBefore(alertDiv, document.body.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Show modal alert
+        function showModalAlert(message, type) {
+            const alertHtml = `<div class="alert alert-${type}">${message}</div>`;
+            document.getElementById('modalAlert').innerHTML = alertHtml;
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const portalModal = document.getElementById('portalModal');
+            const testModal = document.getElementById('testModal');
+            
+            if (event.target === portalModal) {
+                closePortalModal();
+            }
+            if (event.target === testModal) {
+                closeTestModal();
+            }
+        }
+    </script>
+</body>
+</html>
